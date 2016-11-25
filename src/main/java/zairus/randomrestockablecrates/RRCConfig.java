@@ -15,10 +15,10 @@ public class RRCConfig
 	public static int tier3RestockTime = 24000;
 	public static int tier4RestockTime = 24000;
 	
-	public static NBTTagList crateTier1 = new NBTTagList();
-	public static NBTTagList crateTier2 = new NBTTagList();
-	public static NBTTagList crateTier3 = new NBTTagList();
-	public static NBTTagList crateTier4 = new NBTTagList();
+    public static String tier1DefaultTable = "minecraft:chests/simple_dungeon";
+    public static String tier2DefaultTable = "minecraft:chests/village_blacksmith";
+    public static String tier3DefaultTable = "minecraft:chests/stronghold_library";
+    public static String tier4DefaultTable = "minecraft:chests/end_city_treasure";
 	
 	public static void init(File file)
 	{
@@ -33,51 +33,13 @@ public class RRCConfig
 		tier3RestockTime = config.getInt("tier3RestockTime", "CRATE_RESTOCK_TIMES", tier3RestockTime, 10, 300000, "Ticks for tier 3 crate.");
 		tier4RestockTime = config.getInt("tier4RestockTime", "CRATE_RESTOCK_TIMES", tier4RestockTime, 10, 300000, "Ticks for tier 4 crate.");
 		
-		config.setCategoryComment("TIER1_POOL", "Pool configuration for tier 1 crates.");
-		int tier1Elements = config.getInt("totalElements", "TIER1_POOL", 2, 1, 1000, "Total number of elements(items) on tier 1 pool.");
-		crateTier1 = getDefaultTagList(tier1Elements, "TIER1_POOL", "minecraft:wooden_sword");
+		config.setCategoryComment("CRATE_DEFAULT_TABLE", "Default loot table for crates by type");
 		
-		config.setCategoryComment("TIER2_POOL", "Pool configuration for tier 2 crates.");
-		int tier2Elements = config.getInt("totalElements", "TIER2_POOL", 2, 1, 1000, "Total number of elements(items) on tier 2 pool.");
-		crateTier2 = getDefaultTagList(tier2Elements, "TIER2_POOL", "minecraft:stone_sword");
-		
-		config.setCategoryComment("TIER3_POOL", "Pool configuration for tier 3 crates.");
-		int tier3Elements = config.getInt("totalElements", "TIER3_POOL", 2, 1, 1000, "Total number of elements(items) on tier 3 pool.");
-		crateTier3 = getDefaultTagList(tier3Elements, "TIER3_POOL", "minecraft:iron_sword");
-		
-		config.setCategoryComment("TIER4_POOL", "Pool configuration for tier 4 crates.");
-		int tier4Elements = config.getInt("totalElements", "TIER4_POOL", 2, 1, 1000, "Total number of elements(items) on tier 4 pool.");
-		crateTier4 = getDefaultTagList(tier4Elements, "TIER4_POOL", "minecraft:diamond_sword");
+		tier1DefaultTable = config.getString("tier1DefaultLootTable", "CRATE_DEFAULT_TABLE", tier1DefaultTable, "Loot table for tier 1 crate");
+		tier2DefaultTable = config.getString("tier2DefaultLootTable", "CRATE_DEFAULT_TABLE", tier2DefaultTable, "Loot table for tier 2 crate");
+		tier3DefaultTable = config.getString("tier3DefaultLootTable", "CRATE_DEFAULT_TABLE", tier3DefaultTable, "Loot table for tier 3 crate");
+		tier4DefaultTable = config.getString("tier4DefaultLootTable", "CRATE_DEFAULT_TABLE", tier4DefaultTable, "Loot table for tier 4 crate");
 		
 		config.save();
-	}
-	
-	private static NBTTagList getDefaultTagList(int elements, String category, String default_item)
-	{
-		NBTTagList list = new NBTTagList();
-		
-		if (default_item == "")
-			default_item = "minecraft:stone_sword";
-		
-		for (int i = 0; i < elements; ++i)
-		{
-			int weight = config.getInt("weight_item" + i, category, 1, 1, 20, "Weight for generation on crate.");
-			String itemId = config.getString("itemId_item" + i, category, default_item, "Named item id.");
-			int min = config.getInt("min_item" + i, category, 0, 0, 25565, "Minimum count for the item stack.");
-			int max = config.getInt("max_item" + i, category, 1, 1, 25565, "Maximum count for the item stack.");
-			int meta = config.getInt("meta_item" + i, category, 0, 0, 25565, "Metadata for the item.");
-			String nbt = config.getString("nbt_item" + i, category, "", "Additional NBT Data for the item.");
-			
-			NBTTagCompound item = new NBTTagCompound();
-			item.setInteger("weight", weight);
-			item.setString("itemId", itemId);
-			item.setInteger("min", min);
-			item.setInteger("max", max);
-			item.setInteger("meta", meta);
-			item.setString("NBTData", nbt);
-			list.appendTag(item);
-		}
-		
-		return list;
 	}
 }

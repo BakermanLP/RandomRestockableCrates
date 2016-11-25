@@ -17,9 +17,9 @@ public class ContainerCrate extends Container
 		
 		for (int i = 0; i < 3; ++i)
 		{
-			for (int j = 0; j < 3; ++j)
+			for (int j = 0; j < 9; ++j)
 			{
-				this.addSlotToContainer(new Slot(inventory, i + j * 3, 61 + j * 18, 19 + i * 18));
+				this.addSlotToContainer(new Slot(inventory, i * 9 + j , 7 + j * 18, 19 + i * 18));
 			}
 		}
 		
@@ -61,14 +61,14 @@ public class ContainerCrate extends Container
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 			
-			if (index < 9)
+			if (index < 27)
 			{
-				if (!this.mergeItemStack(itemstack1, 9, this.inventorySlots.size(), true))
+				if (!this.mergeItemStack(itemstack1, 27, this.inventorySlots.size(), true))
 				{
 					return null;
 				}
 			}
-			else if (!this.mergeItemStack(itemstack1, 0, 9, false))
+			else if (!this.mergeItemStack(itemstack1, 0, 27, false))
 			{
 				return null;
 			}
