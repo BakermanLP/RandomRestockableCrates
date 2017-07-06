@@ -1,0 +1,6 @@
+itemGroup.RandomCrates=Random Restockable Crates
+tile.block_crate_1.name=Zufällige Kiste Stufe 1
+tile.block_crate_2.name=Zufällige Kiste Stufe 2
+tile.block_crate_3.name=Zufällige Kiste Stufe 3
+tile.block_crate_4.name=Zufällige Kiste Stufe 4
+container.crate=Kiste
