@@ -20,6 +20,7 @@ import net.minecraft.tileentity.TileEntityLockable;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -29,6 +30,7 @@ import net.minecraft.world.storage.loot.LootTable;
 import zairus.randomrestockablecrates.RRCConfig;
 import zairus.randomrestockablecrates.RandomRestockableCrates;
 import zairus.randomrestockablecrates.inventory.ContainerCrate;
+import zairus.randomrestockablecrates.sound.RRCSoundEvents;
 
 public class TileEntityCrate extends TileEntityLockable implements ITickable, IInventory
 {
@@ -213,7 +215,9 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 //                    RandomRestockableCrates.logger.info("Restock: openInventory ticksEllapsed: " + ticksEllapsed);
 //                    RandomRestockableCrates.logger.info("Restock: openInventory restockTime: " + restockTime);
                     this.firstTime = false;
-
+	
+					world.playSound((EntityPlayer)null, pos, RRCSoundEvents.CRATE_OPEN, SoundCategory.BLOCKS, 1.0F, 1.2F / (world.rand.nextFloat() * 0.2f + 0.9f));
+     
 //                    RandomRestockableCrates.logger.info("Restock: openInventory restock");
                     restock(world.rand);
                 }
@@ -286,7 +290,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
                     clear();
 //                    RandomRestockableCrates.logger.info("Restock: update");
                     
-//  				world.playSound((EntityPlayer)null, pos, RRCSoundEvents.CRATE_OPEN, SoundCategory.BLOCKS, 1.0F, 1.2F / (world.rand.nextFloat() * 0.2f + 0.9f));
+ 				world.playSound((EntityPlayer)null, pos, RRCSoundEvents.CRATE_OPEN, SoundCategory.BLOCKS, 1.0F, 1.2F / (world.rand.nextFloat() * 0.2f + 0.9f));
                     
                     updateMe();
 

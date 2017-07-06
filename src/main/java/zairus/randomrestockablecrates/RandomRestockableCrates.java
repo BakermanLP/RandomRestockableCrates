@@ -20,6 +20,7 @@ import zairus.randomrestockablecrates.event.RRCEventHandler;
 import zairus.randomrestockablecrates.gui.GuiHandler;
 import zairus.randomrestockablecrates.network.PacketPipeline;
 import zairus.randomrestockablecrates.proxy.CommonProxy;
+import zairus.randomrestockablecrates.sound.RRCSoundEvents;
 
 @Mod(modid = RRCConstants.MODID, name = RRCConstants.NAME, version = RRCConstants.VERSION)
 public class RandomRestockableCrates
@@ -67,6 +68,7 @@ public class RandomRestockableCrates
 		MinecraftForge.TERRAIN_GEN_BUS.register(eventHandler);
 		
 		NetworkRegistry.INSTANCE.registerGuiHandler(RandomRestockableCrates.instance, new GuiHandler());
+		RRCSoundEvents.registerSounds();
 	}
 	
 	@EventHandler
