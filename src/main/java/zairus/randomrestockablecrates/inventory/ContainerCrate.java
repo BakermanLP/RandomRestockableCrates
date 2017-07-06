@@ -1,17 +1,20 @@
 package zairus.randomrestockablecrates.inventory;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
+
 public class ContainerCrate extends Container
 {
-	private IInventory inventory;
+	private TileEntityCrate inventory;
 	
-	public ContainerCrate(IInventory playerInventory, IInventory crateInventory, EntityPlayer player)
+	public ContainerCrate(TileEntityCrate crateInventory, EntityPlayer player)
 	{
+		InventoryPlayer playerInventory = player.inventory;
 		this.inventory = crateInventory;
 		this.inventory.openInventory(player);
 		
@@ -19,7 +22,7 @@ public class ContainerCrate extends Container
 		{
 			for (int j = 0; j < 9; ++j)
 			{
-				this.addSlotToContainer(new Slot(inventory, i * 9 + j , 7 + j * 18, 19 + i * 18));
+				this.addSlotToContainer(new Slot(inventory, i * 9 + j , 7 + j * 18, 20 + i * 18));
 			}
 		}
 		
@@ -40,7 +43,7 @@ public class ContainerCrate extends Container
 	@Override
 	public boolean canInteractWith(EntityPlayer player)
 	{
-		return true;
+		return inventory.isUsableByPlayer(player);
 	}
 	
 	@Override
@@ -53,7 +56,7 @@ public class ContainerCrate extends Container
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
 	{
-		ItemStack itemstack = null;
+		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.inventorySlots.get(index);
 		
 		if (slot != null && slot.getHasStack())
@@ -61,21 +64,21 @@ public class ContainerCrate extends Container
 			ItemStack itemstack1 = slot.getStack();
 			itemstack = itemstack1.copy();
 			
-			if (index < 27)
+			if (index < TileEntityCrate.SLOT_COUNT)
 			{
-				if (!this.mergeItemStack(itemstack1, 27, this.inventorySlots.size(), true))
+				if (!this.mergeItemStack(itemstack1, TileEntityCrate.SLOT_COUNT, this.inventorySlots.size(), true))
 				{
-					return null;
+					return ItemStack.EMPTY;
 				}
 			}
-			else if (!this.mergeItemStack(itemstack1, 0, 27, false))
+			else if (!this.mergeItemStack(itemstack1, 0, TileEntityCrate.SLOT_COUNT, false))
 			{
-				return null;
+				return ItemStack.EMPTY;
 			}
 			
-			if (itemstack1.stackSize == 0)
+			if (itemstack1.isEmpty())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.EMPTY);
             }
             else
             {

@@ -2,14 +2,16 @@ package zairus.randomrestockablecrates.proxy;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.client.model.ModelLoader;
+
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+
 import zairus.randomrestockablecrates.RRCConstants;
 import zairus.randomrestockablecrates.block.RRCBlock;
 import zairus.randomrestockablecrates.client.renderer.tileentity.TileEntityCrateRenderer;
@@ -47,16 +49,14 @@ public class ClientProxy extends CommonProxy
 	public void registerItemModel(Item item, int meta)
 	{
 		String itemId = RRCConstants.MODID + ":"; // + item.getModName();
-		mc.getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(itemId, "inventory"));
+		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(itemId, "inventory"));
 	}
 	
 	@Override
 	public void registerItemModel(Item item, int meta, String texture)
 	{
-		ModelBakery.registerItemVariants(item, new ResourceLocation(RRCConstants.MODID, texture));
-		
 		String itemId = RRCConstants.MODID + ":" + texture;
-		mc.getRenderItem().getItemModelMesher().register(item, meta, new ModelResourceLocation(itemId, "inventory"));
+		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(itemId, "inventory"));
 	}
 	
 	public void registerBlockModel(RRCBlock block, String modName)

@@ -6,17 +6,13 @@ import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
+
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
@@ -24,6 +20,12 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToMessageCodec;
 
 @ChannelHandler.Sharable
 public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, AbstractPacket>
@@ -151,7 +153,7 @@ public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, Abstra
 	@SideOnly(Side.CLIENT)
 	private EntityPlayer getClientPlayer()
 	{
-		return Minecraft.getMinecraft().thePlayer;
+		return Minecraft.getMinecraft().player;
 	}
 	
 	public void sendToAll(AbstractPacket message)

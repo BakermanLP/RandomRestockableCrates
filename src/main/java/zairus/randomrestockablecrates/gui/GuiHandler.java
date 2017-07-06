@@ -21,8 +21,9 @@ public class GuiHandler implements IGuiHandler
 			TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 			if (tileEntity instanceof TileEntityCrate)
 			{
-				return new ContainerCrate(player.inventory, ((TileEntityCrate)tileEntity), player);
-			}
+				TileEntityCrate tileEntityCrate = (TileEntityCrate) tileEntity;
+				return new ContainerCrate(tileEntityCrate, player);
+		}
 			break;
 		}
 		
@@ -38,7 +39,8 @@ public class GuiHandler implements IGuiHandler
 			TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 			if (tileEntity instanceof TileEntityCrate)
 			{
-				return new GuiCrate((TileEntityCrate)tileEntity);
+				TileEntityCrate tileEntityCrate = (TileEntityCrate) tileEntity;
+				return new GuiCrate(tileEntityCrate, player);
 			}
 			break;
 		}

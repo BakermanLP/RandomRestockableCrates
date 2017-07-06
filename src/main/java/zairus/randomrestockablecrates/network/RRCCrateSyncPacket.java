@@ -1,10 +1,11 @@
 package zairus.randomrestockablecrates.network;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
 import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
 
 public class RRCCrateSyncPacket extends AbstractPacket
@@ -67,7 +68,7 @@ public class RRCCrateSyncPacket extends AbstractPacket
 	
 	private void doSync(EntityPlayer player)
 	{
-		TileEntity tileEntity = player.worldObj.getTileEntity(new BlockPos(x, y, z));
+		TileEntity tileEntity = player.world.getTileEntity(new BlockPos(x, y, z));
 		
 		if (tileEntity instanceof TileEntityCrate)
 		{

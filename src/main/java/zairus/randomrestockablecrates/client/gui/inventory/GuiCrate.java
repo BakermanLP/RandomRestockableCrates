@@ -1,12 +1,14 @@
 package zairus.randomrestockablecrates.client.gui.inventory;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import zairus.randomrestockablecrates.RRCConstants;
 import zairus.randomrestockablecrates.inventory.ContainerCrate;
 import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
@@ -16,18 +18,20 @@ public class GuiCrate extends GuiContainer
 {
 	private static final ResourceLocation GUI_BACKGROUND = new ResourceLocation(RRCConstants.MODID, "textures/gui/gui_crate.png");
 	
-	private IInventory inventory;
+	private TileEntityCrate inventory;
+	private InventoryPlayer inventoryPlayer;
 	
-	public GuiCrate(IInventory inventorySlots)
-	{
-		super(new ContainerCrate(Minecraft.getMinecraft().thePlayer.inventory, inventorySlots, Minecraft.getMinecraft().thePlayer));
+	public GuiCrate(TileEntityCrate inventorySlots, EntityPlayer player) {
+		super(new ContainerCrate(inventorySlots, player));
 		this.inventory = inventorySlots;
+		this.inventoryPlayer = player.inventory;
 	}
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
 	{
-		this.fontRendererObj.drawString(((TileEntityCrate)inventory).getDefaultName(), 8, 6, 4210752);
+		this.fontRendererObj.drawString(inventory.getDisplayName().getUnformattedText(), 8, 6, 4210752);
+		this.fontRendererObj.drawString(inventoryPlayer.getDisplayName().getUnformattedText(), 8, this.ySize - 88, 4210752);
 	}
 	
 	@Override

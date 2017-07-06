@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
@@ -17,24 +18,25 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntityLockable;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTable;
-import net.minecraft.world.storage.loot.LootTableList;
-import zairus.randomrestockablecrates.RandomRestockableCrates;
+
 import zairus.randomrestockablecrates.RRCConfig;
+import zairus.randomrestockablecrates.RandomRestockableCrates;
 import zairus.randomrestockablecrates.inventory.ContainerCrate;
-import zairus.randomrestockablecrates.sound.RRCSoundEvents;
 
 public class TileEntityCrate extends TileEntityLockable implements ITickable, IInventory
 {
+	public static final int SLOT_COUNT = 27;
+	
 	public int playersUsing;
 
-	private ItemStack[] chestContents = new ItemStack[27];
+	private NonNullList<ItemStack> chestContents = NonNullList.withSize(SLOT_COUNT, ItemStack.EMPTY);
 	private String customName;
 	private long lastOpened;
 	private boolean open = false;
@@ -82,7 +84,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	public Container createContainer(InventoryPlayer playerInventory, EntityPlayer player)
 	{
 //        RandomRestockableCrates.logger.info("Restock: createContainer");
-		return new ContainerCrate(playerInventory, this, player);
+		return new ContainerCrate(this, player);
 	}
 	
 	@Override
@@ -94,75 +96,55 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	@Override
 	public int getSizeInventory()
 	{
-		return 27;
+		return SLOT_COUNT;
 	}
 	
 	@Override
 	public ItemStack getStackInSlot(int index)
 	{
-		return this.chestContents[index];
+		return this.chestContents.get(index);
 	}
 	
 	@Override
 	public ItemStack decrStackSize(int index, int count)
 	{
-        // RandomRestockableCrates.logger.info("Restock: decrStackSize");
-		if (this.chestContents[index] != null)
-		{
-			if (this.chestContents[index].stackSize <= count)
-			{
-				ItemStack itemstack1 = this.chestContents[index];
-                this.chestContents[index] = null;
-                this.markDirty();
-                return itemstack1;
-			}
-			else
-			{
-				ItemStack itemstack = this.chestContents[index].splitStack(count);
-				
-                if (this.chestContents[index].stackSize == 0)
-                {
-                    this.chestContents[index] = null;
-                }
-                
-                this.markDirty();
-                return itemstack;
-			}
-		}
-		else
-		{
-			return null;
-		}
+		return ItemStackHelper.getAndSplit(chestContents, index, count);
 	}
 	
+	/**
+	 * Removes a stack from the given slot and returns it.
+	 */
 	@Override
 	public ItemStack removeStackFromSlot(int index)
 	{
-        // RandomRestockableCrates.logger.info("Restock: removeStackFromSlot");
-		if (this.chestContents[index] != null)
-        {
-            ItemStack itemstack = this.chestContents[index];
-            this.chestContents[index] = null;
-            return itemstack;
-        }
-        else
-        {
-            return null;
-        }
+		return ItemStackHelper.getAndRemove(chestContents, index);
+	}
+	
+	@Override
+	public boolean isEmpty()
+	{
+		for (ItemStack itemstack : chestContents)
+		{
+			if (!itemstack.isEmpty())
+			{
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	@Override
 	public void setInventorySlotContents(int index, ItemStack stack)
 	{
-        // RandomRestockableCrates.logger.info("Restock: setInventorySlotContents");
-		this.chestContents[index] = stack;
+		ItemStack itemstack = this.chestContents.get(index);
+		this.chestContents.set(index, stack);
 		
-        if (stack != null && stack.stackSize > this.getInventoryStackLimit())
-        {
-            stack.stackSize = this.getInventoryStackLimit();
-        }
-        
-        this.markDirty();
+		if (stack.getCount() > this.getInventoryStackLimit())
+		{
+			stack.setCount(this.getInventoryStackLimit());
+		}
+		this.markDirty();
 	}
 	
 	@Override
@@ -172,9 +154,9 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	}
 	
 	@Override
-	public boolean isUseableByPlayer(EntityPlayer player)
+	public boolean isUsableByPlayer(EntityPlayer player)
 	{
-		return true;
+		return this.world.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
 	}
 	
 	@Override
@@ -182,11 +164,11 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	{
 
 //        RandomRestockableCrates.logger.info("Restock: openInventory top worldObj: " + (worldObj != null));
-//        RandomRestockableCrates.logger.info("Restock: openInventory top this_worldObj: " + (this.worldObj != null));
+//        RandomRestockableCrates.logger.info("Restock: openInventory top this_worldObj: " + (world != null));
 
-        if (this.worldObj.isRemote)
+        if (world.isRemote)
         {
-//            RandomRestockableCrates.logger.info("Restock: openInventory This is remote: " + (this.worldObj.isRemote));
+//            RandomRestockableCrates.logger.info("Restock: openInventory This is remote: " + (world.isRemote));
             return;
         }
         double x = this.pos.getX() + 0.5D;
@@ -233,15 +215,15 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
                     this.firstTime = false;
 
 //                    RandomRestockableCrates.logger.info("Restock: openInventory restock");
-                    restock(this.worldObj.rand);
+                    restock(world.rand);
                 }
 
 //                updateMe();
             }
 
-			this.worldObj.addBlockEvent(this.pos, this.getBlockType(), 1, this.playersUsing);
-			this.worldObj.notifyNeighborsOfStateChange(this.pos, this.getBlockType());
-			this.worldObj.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType());
+			world.addBlockEvent(this.pos, this.getBlockType(), 1, this.playersUsing);
+			world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
+			world.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType(), false);
 		}
 		
 		if (!this.open)
@@ -267,7 +249,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	@Override
 	public void update()
 	{
-        if (worldObj != null && !this.worldObj.isRemote)
+        if (world != null && !world.isRemote)
         {
             if (this.tier > -1)
             {
@@ -304,11 +286,11 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
                     clear();
 //                    RandomRestockableCrates.logger.info("Restock: update");
                     
-//  				this.worldObj.playSound((EntityPlayer)null, pos, RRCSoundEvents.CRATE_OPEN, SoundCategory.BLOCKS, 1.0F, 1.2F / (this.worldObj.rand.nextFloat() * 0.2f + 0.9f));
+//  				world.playSound((EntityPlayer)null, pos, RRCSoundEvents.CRATE_OPEN, SoundCategory.BLOCKS, 1.0F, 1.2F / (world.rand.nextFloat() * 0.2f + 0.9f));
                     
                     updateMe();
 
-                    // restock(this.worldObj.rand);
+                    // restock(world.rand);
                 }
                 
             }
@@ -341,13 +323,13 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
         {
 //            RandomRestockableCrates.logger.info("Restock: in LootTable " + this.lootTable);
             this.lootTableLocation = new ResourceLocation(this.lootTable);
-            if (this.worldObj.getLootTableManager() == null)
+            if (world.getLootTableManager() == null)
             {
 //                RandomRestockableCrates.logger.info("Could not get loot manager.");
                 return;
             }
             
-            LootTable table = this.worldObj.getLootTableManager().getLootTableFromLocation(this.lootTableLocation);
+            LootTable table = world.getLootTableManager().getLootTableFromLocation(this.lootTableLocation);
 //            this.lootTable = null;
             Random random;
             
@@ -360,7 +342,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
                 random = new Random(this.lootTableSeed);
             }
             
-            LootContext.Builder lootBuilder = new LootContext.Builder((WorldServer)this.worldObj);
+            LootContext.Builder lootBuilder = new LootContext.Builder((WorldServer)world);
 
             double x = this.pos.getX() + 0.5D;
             double y = this.pos.getY() + 0.5D;
@@ -387,7 +369,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	
 	private ItemStack getStackFromPool(NBTTagList list, Random rand)
 	{
-		ItemStack stack = null;
+		ItemStack stack = ItemStack.EMPTY;
 		
 		NBTTagCompound curElement = list.getCompoundTagAt(rand.nextInt(list.tagCount()));
 		
@@ -420,7 +402,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	@Override
 	public void closeInventory(EntityPlayer player)
 	{
-        if (this.worldObj == null)
+        if (world == null)
         {
             return;
         }
@@ -429,9 +411,9 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 		if (!player.isSpectator() && this.getBlockType() instanceof BlockChest)
 		{
 			--this.playersUsing;
-			this.worldObj.addBlockEvent(this.pos, this.getBlockType(), 1, this.playersUsing);
-			this.worldObj.notifyNeighborsOfStateChange(this.pos, this.getBlockType());
-			this.worldObj.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType());
+			world.addBlockEvent(this.pos, this.getBlockType(), 1, this.playersUsing);
+			world.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
+			world.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType(), false);
 		}
 	}
 	
@@ -443,7 +425,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 		
         NBTTagList nbttaglist = compound.getTagList("Items", 10);
 
-		this.chestContents = new ItemStack[this.getSizeInventory()];
+		this.chestContents.clear();
 		
 		if (compound.hasKey("CustomName", 8))
 		{
@@ -459,16 +441,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
         {
             this.lootTableSeed = compound.getLong("LootTableSeed");
         }
-		for (int i = 0; i < nbttaglist.tagCount(); ++i)
-		{
-			NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-			int j = nbttagcompound.getByte("Slot") & 255;
-			
-			if (j >= 0 && j < this.chestContents.length)
-			{
-				this.chestContents[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
-			}
-		}
+		ItemStackHelper.loadAllItems(compound, chestContents);
 		
 		this.firstTime = compound.getBoolean("first");
 		this.lastOpened = compound.getLong("lastOpened");
@@ -486,16 +459,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 		super.writeToNBT(compound);
 		NBTTagList nbttaglist = new NBTTagList();
 		
-		for (int i = 0; i < this.chestContents.length; ++i)
-		{
-			if (this.chestContents[i] != null)
-			{
-				NBTTagCompound nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Slot", (byte)i);
-				this.chestContents[i].writeToNBT(nbttagcompound);
-				nbttaglist.appendTag(nbttagcompound);
-			}
-		}
+		ItemStackHelper.saveAllItems(compound, chestContents);
 		
 		compound.setTag("Items", nbttaglist);
 		
@@ -571,10 +535,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	public void clear()
 	{
 //        RandomRestockableCrates.logger.info("Restock: clear");
-		for (int i = 0; i < this.chestContents.length; ++i)
-		{
-			this.chestContents[i] = null;
-		}
+		chestContents.clear();
 	}
 	
 	@Override
@@ -605,21 +566,8 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	{
 //        RandomRestockableCrates.logger.info("Restock: SPacketUpdateTileEntity");
         NBTTagCompound compound = new NBTTagCompound();
-
-		NBTTagList nbttaglist = new NBTTagList();
 		
-		for (int i = 0; i < this.chestContents.length; ++i)
-		{
-			if (this.chestContents[i] != null)
-			{
-				NBTTagCompound nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Slot", (byte)i);
-				this.chestContents[i].writeToNBT(nbttagcompound);
-				nbttaglist.appendTag(nbttagcompound);
-			}
-		}
-		
-		compound.setTag("Items", nbttaglist);
+		ItemStackHelper.saveAllItems(compound, chestContents);
 		
 		if (this.hasCustomName())
 		{
@@ -668,7 +616,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 
             NBTTagList nbttaglist = compound.getTagList("Items", 10);
 
-            this.chestContents = new ItemStack[this.getSizeInventory()];
+            this.chestContents.clear();
 
             if (compound.hasKey("CustomName", 8))
             {
@@ -684,16 +632,8 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
             {
                 this.lootTableSeed = compound.getLong("LootTableSeed");
             }
-            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-            {
-                NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-                int j = nbttagcompound.getByte("Slot") & 255;
-
-                if (j >= 0 && j < this.chestContents.length)
-                {
-                    this.chestContents[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
-                }
-            }
+	
+			ItemStackHelper.loadAllItems(compound, chestContents);
 
             this.firstTime = compound.getBoolean("first");
             this.lastOpened = compound.getLong("lastOpened");
@@ -724,7 +664,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	}
 
     public long getTime() {
-        return this.worldObj.getWorldInfo().getWorldTotalTime();
+        return world.getWorldInfo().getWorldTotalTime();
     }
     
     @Override
@@ -737,9 +677,9 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	{
 //        RandomRestockableCrates.logger.info("Restock: updateMe");
 		this.markDirty();
-		this.worldObj.markBlockRangeForRenderUpdate(getPos().add(-1, -1, -1), getPos().add(1, 1, 1));
-		IBlockState state = this.worldObj.getBlockState(getPos());
-		this.worldObj.notifyBlockUpdate(getPos(), state, state, 0);
+		world.markBlockRangeForRenderUpdate(getPos().add(-1, -1, -1), getPos().add(1, 1, 1));
+		IBlockState state = world.getBlockState(getPos());
+		world.notifyBlockUpdate(getPos(), state, state, 0);
 	}
 
 }

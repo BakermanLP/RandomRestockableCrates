@@ -1,7 +1,5 @@
 package zairus.randomrestockablecrates.block;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.ITileEntityProvider;
@@ -21,25 +19,25 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.World;
+
 import zairus.randomrestockablecrates.RandomRestockableCrates;
-import zairus.randomrestockablecrates.sound.RRCSoundEvents;
 import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
 
 public class BlockCrate extends BlockContainer implements ITileEntityProvider
 {
+	public static final AxisAlignedBB CRATE_BOUNDING_BOX = new AxisAlignedBB(0.08F, 0.0F, 0.08F, 0.93F, 0.93F, 0.93F);;
+	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyBool OPEN = PropertyBool.create("open");
+	
 	private String modName;
 	
 	private final int crateTier;
-	
-	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
-	public static final PropertyBool OPEN = PropertyBool.create("open");
 	
 	public BlockCrate(Material material, int tier)
 	{
@@ -52,12 +50,22 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(OPEN, false));
 		
 		this.setBlockUnbreakable();
+		tier+=1;
+		String name = "block_crate_" + tier;
+		SoundType type = SoundType.WOOD;
+		if(tier > 2){
+			type = SoundType.METAL;
+		}
+		this.setSoundType(type);
+		this.setRegistryName(name);
+		this.setUnlocalizedName(name);
+		this.modName = name;
 	}
 	
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
 	{
-		return new AxisAlignedBB(0.08F, 0.0F, 0.08F, 0.93F, 0.93F, 0.93F);
+		return CRATE_BOUNDING_BOX;
 	}
 	
 	protected Block setSoundType(SoundType sound)
@@ -78,7 +86,7 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
 		// world.playSound(player, pos, RRCSoundEvents.CRATE_OPEN, SoundCategory.BLOCKS, 1.0F, 1.2F / (world.rand.nextFloat() * 0.2f + 0.9f));
 		
@@ -88,9 +96,9 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 		}
 		else
 		{
-			ILockableContainer ilockablecontainer = this.getLockableContainer(world, pos);
+			ILockableContainer container = this.getLockableContainer(world, pos);
 			
-			if (ilockablecontainer != null)
+			if (container != null)
 			{
 				player.openGui(RandomRestockableCrates.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
 				
@@ -195,43 +203,23 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
 	{
-		EnumFacing enumfacing = EnumFacing.getHorizontal(MathHelper.floor_double((double)(placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).getOpposite();
+		EnumFacing enumfacing = EnumFacing.getHorizontal(MathHelper.floor((double)(placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).getOpposite();
         state = state.withProperty(FACING, enumfacing).withProperty(OPEN, false);
         world.setBlockState(pos, state, 3);
 	}
 	
 	@Override
-	public IBlockState onBlockPlaced(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
 	{
-		return super.onBlockPlaced(world, pos, facing, hitX, hitY, hitZ, meta, placer)
+		return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand)
 				.withProperty(FACING, placer.getHorizontalFacing())
 				.withProperty(OPEN, false);
-	}
-	
-	@Override
-	public void onBlockDestroyedByPlayer(World world, BlockPos pos, IBlockState state)
-	{
-		super.onBlockDestroyedByPlayer(world, pos, state);
 	}
 	
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state)
 	{
 		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
-	}
-	
-	//Block
-	public BlockCrate setUnlocalizedName(String unlocalizedName)
-	{
-		this.modName = unlocalizedName;
-		super.setUnlocalizedName(unlocalizedName);
-		return this;
-	}
-	
-	@Override
-	public String getUnlocalizedName()
-	{
-		return super.getUnlocalizedName() + "";
 	}
 	
 	public String getModName()
@@ -241,10 +229,10 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 	
 	public enum EnumTier implements IStringSerializable
 	{
-		TIER1(0, "tier1")
-		,TIER2(1, "tier2")
-		,TIER3(2, "tier3")
-		,TIER4(3, "tier4");
+		TIER1(0, "tier1"),
+		TIER2(1, "tier2"),
+		TIER3(2, "tier3"),
+		TIER4(3, "tier4");
 		
 		private final String name;
 		private final int meta;
