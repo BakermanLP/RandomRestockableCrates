@@ -11,8 +11,7 @@ import zairus.randomrestockablecrates.block.BlockCrate;
 import zairus.randomrestockablecrates.client.ModelCrate;
 import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
 
-public class TileEntityCrateRenderer extends TileEntitySpecialRenderer<TileEntityCrate>
-{
+public class TileEntityCrateRenderer extends TileEntitySpecialRenderer<TileEntityCrate> {
 	private static final ResourceLocation cratetier1 = new ResourceLocation(RRCConstants.MODID, "textures/entity/crate/crate_tier1.png");
 	private static final ResourceLocation cratetier2 = new ResourceLocation(RRCConstants.MODID, "textures/entity/crate/crate_tier2.png");
 	private static final ResourceLocation cratetier3 = new ResourceLocation(RRCConstants.MODID, "textures/entity/crate/crate_tier3.png");
@@ -20,37 +19,29 @@ public class TileEntityCrateRenderer extends TileEntitySpecialRenderer<TileEntit
 	
 	private ModelCrate crate = new ModelCrate();
 	
-	public TileEntityCrateRenderer()
-	{
-		;
+	public TileEntityCrateRenderer() {
 	}
 	
 	@Override
-	public void renderTileEntityAt(TileEntityCrate te, double x, double y, double z, float partialTicks, int destroyStage)
-	{
+	public void renderTileEntityAt(TileEntityCrate te, double x, double y, double z, float partialTicks, int destroyStage) {
 		GlStateManager.enableDepth();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
 		int i;
 		
-		if (!te.hasWorld())
-		{
+		if (!te.hasWorld()) {
 			i = 0;
-		}
-		else
-		{
+		} else {
 			Block block = te.getBlockType();
 			i = te.getBlockMetadata();
 			
-			if (block instanceof BlockCrate && i == 0)
-			{
-				((BlockChest)block).checkForSurroundingChests(te.getWorld(), te.getPos(), te.getWorld().getBlockState(te.getPos()));
-                i = te.getBlockMetadata();
+			if (block instanceof BlockCrate && i == 0) {
+				((BlockChest) block).checkForSurroundingChests(te.getWorld(), te.getPos(), te.getWorld().getBlockState(te.getPos()));
+				i = te.getBlockMetadata();
 			}
 		}
 		
-		if (destroyStage >= 0)
-		{
+		if (destroyStage >= 0) {
 			this.bindTexture(DESTROY_STAGES[destroyStage]);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.pushMatrix();
@@ -61,63 +52,54 @@ public class TileEntityCrateRenderer extends TileEntitySpecialRenderer<TileEntit
 		
 		//RandomRestockableCrates.logger.info("t:" + ((TileEntityCrate)te.getWorld().getTileEntity(te.getPos())).getTier());
 		
-		switch(te.getTier())
-		{
-		case 1:
-			this.bindTexture(cratetier2);
-			break;
-		case 2:
-			this.bindTexture(cratetier3);
-			break;
-		case 3:
-			this.bindTexture(cratetier4);
-			break;
-		default:
-			this.bindTexture(cratetier1);
-			break;
+		switch (te.getTier()) {
+			case 1:
+				this.bindTexture(cratetier2);
+				break;
+			case 2:
+				this.bindTexture(cratetier3);
+				break;
+			case 3:
+				this.bindTexture(cratetier4);
+				break;
+			default:
+				this.bindTexture(cratetier1);
+				break;
 		}
 		
 		GlStateManager.pushMatrix();
 		GlStateManager.enableRescaleNormal();
 		
-		if (destroyStage < 0)
-		{
+		if (destroyStage < 0) {
 			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 		
-		GlStateManager.translate((float)x, (float)y + 1.0F, (float)z + 1.0F);
+		GlStateManager.translate((float) x, (float) y + 1.0F, (float) z + 1.0F);
 		GlStateManager.scale(1.0F, -1.0F, -1.0F);
 		GlStateManager.translate(0.5F, 0.5F, 0.5F);
 		
 		int j = 0;
 		
-		if (i == 2)
-		{
+		if (i == 2) {
 			j = 180;
 		}
 		
-		if (i == 3)
-		{
+		if (i == 3) {
 			j = 0;
 		}
 		
-		if (i == 4)
-		{
+		if (i == 4) {
 			j = 90;
 		}
 		
-		if (i == 5)
-		{
+		if (i == 5) {
 			j = -90;
 		}
 		
-		GlStateManager.rotate((float)j, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate((float) j, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translate(-0.5F, -0.5F, -0.5F);
 		
-		if (te.getIsOpen())
-			crate.lid.isHidden = true;
-		else
-			crate.lid.isHidden = false;
+		crate.lid.isHidden = te.getIsOpen();
 		
 		crate.renderAll();
 		
@@ -125,8 +107,7 @@ public class TileEntityCrateRenderer extends TileEntitySpecialRenderer<TileEntit
 		GlStateManager.popMatrix();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		
-		if (destroyStage >= 0)
-		{
+		if (destroyStage >= 0) {
 			GlStateManager.matrixMode(5890);
 			GlStateManager.popMatrix();
 			GlStateManager.matrixMode(5888);

@@ -2,17 +2,16 @@ package zairus.randomrestockablecrates.client;
 
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class ModelCrate extends ModelBase
-{
+public class ModelCrate extends ModelBase {
 	public ModelRenderer Box;
 	public ModelRenderer lid;
 	
-	public ModelCrate()
-	{
+	public ModelCrate() {
 		textureWidth = 64;
 		textureHeight = 64;
 		
@@ -29,8 +28,7 @@ public class ModelCrate extends ModelBase
 		lid.rotationPointZ = 2.0F;
 	}
 	
-	public void renderAll()
-	{
+	public void renderAll() {
 		Box.render(0.0625F);
 		lid.render(0.0625F);
 	}

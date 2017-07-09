@@ -4,12 +4,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandlerContext;
 import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
 
-public class RRCCrateSyncPacket extends AbstractPacket
-{
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+
+public class RRCCrateSyncPacket extends AbstractPacket {
 	private int x;
 	private int y;
 	private int z;
@@ -17,13 +17,10 @@ public class RRCCrateSyncPacket extends AbstractPacket
 	private int lastOpened;
 	private boolean open;
 	
-	public RRCCrateSyncPacket()
-	{
-		;
+	public RRCCrateSyncPacket() {
 	}
 	
-	public RRCCrateSyncPacket(int x, int y, int z, int ticks, int lastOpened, boolean open)
-	{
+	public RRCCrateSyncPacket(int x, int y, int z, int ticks, int lastOpened, boolean open) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -33,8 +30,7 @@ public class RRCCrateSyncPacket extends AbstractPacket
 	}
 	
 	@Override
-	public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
-	{
+	public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
 		buffer.writeInt(x);
 		buffer.writeInt(y);
 		buffer.writeInt(z);
@@ -44,8 +40,7 @@ public class RRCCrateSyncPacket extends AbstractPacket
 	}
 	
 	@Override
-	public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer)
-	{
+	public void decodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
 		x = buffer.readInt();
 		y = buffer.readInt();
 		z = buffer.readInt();
@@ -55,24 +50,20 @@ public class RRCCrateSyncPacket extends AbstractPacket
 	}
 	
 	@Override
-	public void handleClientSide(EntityPlayer player)
-	{
+	public void handleClientSide(EntityPlayer player) {
 		doSync(player);
 	}
 	
 	@Override
-	public void handleServerSide(EntityPlayer player)
-	{
+	public void handleServerSide(EntityPlayer player) {
 		doSync(player);
 	}
 	
-	private void doSync(EntityPlayer player)
-	{
+	private void doSync(EntityPlayer player) {
 		TileEntity tileEntity = player.world.getTileEntity(new BlockPos(x, y, z));
 		
-		if (tileEntity instanceof TileEntityCrate)
-		{
-			TileEntityCrate crate = (TileEntityCrate)tileEntity;
+		if (tileEntity instanceof TileEntityCrate) {
+			TileEntityCrate crate = (TileEntityCrate) tileEntity;
 			crate.syncValues(ticks, lastOpened, open);
 		}
 	}

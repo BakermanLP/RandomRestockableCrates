@@ -17,67 +17,53 @@ import zairus.randomrestockablecrates.block.RRCBlock;
 import zairus.randomrestockablecrates.client.renderer.tileentity.TileEntityCrateRenderer;
 import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
 
-public class ClientProxy extends CommonProxy
-{
+public class ClientProxy extends CommonProxy {
 	public static final Minecraft mc = Minecraft.getMinecraft();
 	
 	@Override
-	public void preInit(FMLPreInitializationEvent e)
-	{
-		;
+	public void preInit(FMLPreInitializationEvent e) {
 	}
 	
 	@Override
-	public void init(FMLInitializationEvent e)
-	{
-		;
+	public void init(FMLInitializationEvent e) {
 	}
 	
 	@Override
-	public void postInit(FMLPostInitializationEvent e)
-	{
-		;
+	public void postInit(FMLPostInitializationEvent e) {
 	}
 	
 	@Override
-	public void registerItem(Item item, String name)
-	{
+	public void registerItem(Item item, String name) {
 		super.registerItem(item, name);
 	}
 	
 	@Override
-	public void registerItemModel(Item item, int meta)
-	{
+	public void registerItemModel(Item item, int meta) {
 		String itemId = RRCConstants.MODID + ":"; // + item.getModName();
 		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(itemId, "inventory"));
 	}
 	
 	@Override
-	public void registerItemModel(Item item, int meta, String texture)
-	{
+	public void registerItemModel(Item item, int meta, String texture) {
 		String itemId = RRCConstants.MODID + ":" + texture;
 		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(itemId, "inventory"));
 	}
 	
-	public void registerBlockModel(RRCBlock block, String modName)
-	{
+	public void registerBlockModel(RRCBlock block, String modName) {
 		registerBlockModel(block, 0, modName);
 	}
 	
 	@Override
-	public void registerBlockModel(Block block, int meta, String modName)
-	{
+	public void registerBlockModel(Block block, int meta, String modName) {
 		Item item = Item.getItemFromBlock(block);
 		
-		if (item != null)
-		{
+		if (item != null) {
 			registerItemModel(item, meta, modName);
 		}
 	}
 	
 	@Override
-	public void initTESR()
-	{
+	public void initTESR() {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrate.class, new TileEntityCrateRenderer());
 	}
 }

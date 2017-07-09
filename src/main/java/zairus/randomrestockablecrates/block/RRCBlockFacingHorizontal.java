@@ -1,7 +1,6 @@
 package zairus.randomrestockablecrates.block;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -14,34 +13,28 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class RRCBlockFacingHorizontal extends RRCBlock
-{
+public class RRCBlockFacingHorizontal extends RRCBlock {
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	
-	protected RRCBlockFacingHorizontal(Material material)
-	{
+	protected RRCBlockFacingHorizontal(Material material) {
 		super(material);
 	}
 	
 	@Override
-	protected BlockStateContainer createBlockState()
-	{
-		return new BlockStateContainer(this, new IProperty[] {FACING});
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, FACING);
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState state)
-	{
-		return ((EnumFacing)state.getValue(FACING)).getIndex();
+	public int getMetaFromState(IBlockState state) {
+		return state.getValue(FACING).getIndex();
 	}
 	
 	@Override
-	public IBlockState getStateFromMeta(int meta)
-	{
+	public IBlockState getStateFromMeta(int meta) {
 		EnumFacing enumfacing = EnumFacing.getFront(meta);
 		
-		if (enumfacing.getAxis() == EnumFacing.Axis.Y)
-		{
+		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;
 		}
 		
@@ -49,17 +42,15 @@ public class RRCBlockFacingHorizontal extends RRCBlock
 	}
 	
 	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos)
-	{
+	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
 		return state;
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
-	{
-		EnumFacing enumfacing = EnumFacing.getHorizontal(MathHelper.floor((double)(placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).getOpposite();
-        state = state.withProperty(FACING, enumfacing);
-        world.setBlockState(pos, state, 3);
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		EnumFacing enumfacing = EnumFacing.getHorizontal(MathHelper.floor((double) (placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).getOpposite();
+		state = state.withProperty(FACING, enumfacing);
+		world.setBlockState(pos, state, 3);
 	}
 	
 	@Override

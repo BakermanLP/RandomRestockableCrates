@@ -23,8 +23,7 @@ import zairus.randomrestockablecrates.proxy.CommonProxy;
 import zairus.randomrestockablecrates.sound.RRCSoundEvents;
 
 @Mod(modid = RRCConstants.MODID, name = RRCConstants.NAME, version = RRCConstants.VERSION)
-public class RandomRestockableCrates
-{
+public class RandomRestockableCrates {
 	public static Logger logger;
 	
 	@SidedProxy(clientSide = RRCConstants.MOD_CLIENT_PROXY, serverSide = RRCConstants.MOD_COMMON_PROXY)
@@ -37,15 +36,13 @@ public class RandomRestockableCrates
 	
 	public static CreativeTabs tabCrates = new CreativeTabs("RandomCrates") {
 		@Override
-		public ItemStack getTabIconItem()
-		{
+		public ItemStack getTabIconItem() {
 			return new ItemStack(RRCBlocks.crate);
 		}
 	};
 	
 	@Mod.EventHandler
-	public void preInit(FMLPreInitializationEvent event)
-	{
+	public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
 		
 		RRCConfig.init(event.getSuggestedConfigurationFile());
@@ -57,8 +54,7 @@ public class RandomRestockableCrates
 	}
 	
 	@EventHandler
-	public void init(FMLInitializationEvent event)
-	{
+	public void init(FMLInitializationEvent event) {
 		RRCEventHandler eventHandler = new RRCEventHandler();
 		
 		RandomRestockableCrates.proxy.init(event);
@@ -72,8 +68,7 @@ public class RandomRestockableCrates
 	}
 	
 	@EventHandler
-	public void postInit(FMLPostInitializationEvent event)
-	{
+	public void postInit(FMLPostInitializationEvent event) {
 		RandomRestockableCrates.proxy.postInit(event);
 		packetPipeline.postInitialise();
 	}

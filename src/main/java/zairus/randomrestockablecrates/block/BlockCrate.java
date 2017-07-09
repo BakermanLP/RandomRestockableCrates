@@ -5,7 +5,6 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
@@ -29,9 +28,8 @@ import net.minecraft.world.World;
 import zairus.randomrestockablecrates.RandomRestockableCrates;
 import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
 
-public class BlockCrate extends BlockContainer implements ITileEntityProvider
-{
-	public static final AxisAlignedBB CRATE_BOUNDING_BOX = new AxisAlignedBB(0.08F, 0.0F, 0.08F, 0.93F, 0.93F, 0.93F);;
+public class BlockCrate extends BlockContainer implements ITileEntityProvider {
+	public static final AxisAlignedBB CRATE_BOUNDING_BOX = new AxisAlignedBB(0.08F, 0.0F, 0.08F, 0.93F, 0.93F, 0.93F);
 	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool OPEN = PropertyBool.create("open");
 	
@@ -39,8 +37,7 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 	
 	private final int crateTier;
 	
-	public BlockCrate(Material material, int tier)
-	{
+	public BlockCrate(Material material, int tier) {
 		super(material);
 		this.crateTier = tier;
 		this.setCreativeTab(RandomRestockableCrates.tabCrates);
@@ -50,10 +47,10 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(OPEN, false));
 		
 		this.setBlockUnbreakable();
-		tier+=1;
+		tier += 1;
 		String name = "block_crate_" + tier;
 		SoundType type = SoundType.WOOD;
-		if(tier > 2){
+		if (tier > 2) {
 			type = SoundType.METAL;
 		}
 		this.setSoundType(type);
@@ -63,43 +60,34 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 	}
 	
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-	{
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
 		return CRATE_BOUNDING_BOX;
 	}
 	
-	protected Block setSoundType(SoundType sound)
-	{
+	protected Block setSoundType(SoundType sound) {
 		super.setSoundType(sound);
 		return this;
 	}
 	
-	public int getTier()
-	{
+	public int getTier() {
 		return this.crateTier;
 	}
 	
 	@Override
-	public boolean isOpaqueCube(IBlockState state)
-	{
+	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
-	{
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		// world.playSound(player, pos, RRCSoundEvents.CRATE_OPEN, SoundCategory.BLOCKS, 1.0F, 1.2F / (world.rand.nextFloat() * 0.2f + 0.9f));
 		
-		if (world.isRemote)
-		{
+		if (world.isRemote) {
 			return true;
-		}
-		else
-		{
+		} else {
 			ILockableContainer container = this.getLockableContainer(world, pos);
 			
-			if (container != null)
-			{
+			if (container != null) {
 				player.openGui(RandomRestockableCrates.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
 				
 				return true;
@@ -110,78 +98,68 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int meta)
-	{
+	public TileEntity createNewTileEntity(World world, int meta) {
 		return new TileEntityCrate(crateTier);
 	}
 	
 	@Override
-	public boolean canProvidePower(IBlockState state)
-	{
+	public boolean canProvidePower(IBlockState state) {
 		return true;
 	}
 	
 	@Override
-	public boolean hasComparatorInputOverride(IBlockState state)
-	{
+	public boolean hasComparatorInputOverride(IBlockState state) {
 		return true;
 	}
 	
 	@Override
-	public int getComparatorInputOverride(IBlockState blockState, World world, BlockPos pos)
-	{
+	public int getComparatorInputOverride(IBlockState blockState, World world, BlockPos pos) {
 		return Container.calcRedstoneFromInventory(this.getLockableContainer(world, pos));
 	}
 	
-	public ILockableContainer getLockableContainer(World world, BlockPos pos)
-	{
+	public ILockableContainer getLockableContainer(World world, BlockPos pos) {
 		TileEntity tileentity = world.getTileEntity(pos);
 		
-		ILockableContainer ilockablecontainer = (TileEntityCrate)tileentity;
+		ILockableContainer ilockablecontainer = (TileEntityCrate) tileentity;
 		
 		return ilockablecontainer;
 	}
 	
 	@Override
-	protected BlockStateContainer createBlockState()
-	{
-		return new BlockStateContainer(this, new IProperty[] {FACING, OPEN});
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, FACING, OPEN);
 	}
 	
 	@Override
-	public int damageDropped(IBlockState state)
-	{
-		return ((EnumFacing)state.getValue(FACING)).getIndex();
+	public int damageDropped(IBlockState state) {
+		return state.getValue(FACING).getIndex();
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState state)
-	{
+	public int getMetaFromState(IBlockState state) {
 		boolean o = state.getValue(OPEN);
 		int f = state.getValue(FACING).getIndex();
 		
-		if (o)
+		if (o) {
 			f += 5;
+		}
 		
 		return f;
 	}
 	
 	@Override
-	public IBlockState getStateFromMeta(int meta)
-	{
+	public IBlockState getStateFromMeta(int meta) {
 		int m = meta;
 		boolean o = false;
 		
-		if (m > 5)
-		{
+		if (m > 5) {
 			m -= 5;
 			o = true;
 		}
 		
 		EnumFacing enumfacing = EnumFacing.getFront(m);
 		
-		if (enumfacing.getAxis() == EnumFacing.Axis.Y)
-		{
+		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;
 		}
 		
@@ -191,9 +169,8 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 	}
 	
 	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos)
-	{
-		TileEntityCrate crate = (TileEntityCrate)world.getTileEntity(pos);
+	public IBlockState getActualState(IBlockState state, IBlockAccess world, BlockPos pos) {
+		TileEntityCrate crate = (TileEntityCrate) world.getTileEntity(pos);
 		
 		boolean isOpen = crate.getIsOpen();
 		
@@ -201,34 +178,29 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
-	{
-		EnumFacing enumfacing = EnumFacing.getHorizontal(MathHelper.floor((double)(placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).getOpposite();
-        state = state.withProperty(FACING, enumfacing).withProperty(OPEN, false);
-        world.setBlockState(pos, state, 3);
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		EnumFacing enumfacing = EnumFacing.getHorizontal(MathHelper.floor((double) (placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).getOpposite();
+		state = state.withProperty(FACING, enumfacing).withProperty(OPEN, false);
+		world.setBlockState(pos, state, 3);
 	}
 	
 	@Override
-	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
-	{
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
 		return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand)
 				.withProperty(FACING, placer.getHorizontalFacing())
 				.withProperty(OPEN, false);
 	}
 	
 	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state)
-	{
+	public EnumBlockRenderType getRenderType(IBlockState state) {
 		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 	
-	public String getModName()
-	{
+	public String getModName() {
 		return this.modName;
 	}
 	
-	public enum EnumTier implements IStringSerializable
-	{
+	public enum EnumTier implements IStringSerializable {
 		TIER1(0, "tier1"),
 		TIER2(1, "tier2"),
 		TIER3(2, "tier3"),
@@ -237,35 +209,30 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider
 		private final String name;
 		private final int meta;
 		
-		private EnumTier(int meta, String name)
-		{
+		EnumTier(int meta, String name) {
 			this.meta = meta;
 			this.name = name;
 		}
 		
-		public static EnumTier fromMeta(int meta)
-		{
-			switch(meta)
-			{
-			case 1:
-				return TIER2;
-			case 2:
-				return TIER3;
-			case 3:
-				return TIER4;
-			default:
-				return TIER1;
+		public static EnumTier fromMeta(int meta) {
+			switch (meta) {
+				case 1:
+					return TIER2;
+				case 2:
+					return TIER3;
+				case 3:
+					return TIER4;
+				default:
+					return TIER1;
 			}
 		}
 		
 		@Override
-		public String getName()
-		{
+		public String getName() {
 			return this.name;
 		}
 		
-		public int getMetadata()
-		{
+		public int getMetadata() {
 			return this.meta;
 		}
 	}
