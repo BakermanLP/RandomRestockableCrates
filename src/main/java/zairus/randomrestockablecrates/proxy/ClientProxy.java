@@ -13,7 +13,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import zairus.randomrestockablecrates.RRCConstants;
-import zairus.randomrestockablecrates.block.RRCBlock;
 import zairus.randomrestockablecrates.client.renderer.tileentity.TileEntityCrateRenderer;
 import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
 
@@ -47,10 +46,6 @@ public class ClientProxy extends CommonProxy {
 	public void registerItemModel(Item item, int meta, String texture) {
 		String itemId = RRCConstants.MODID + ":" + texture;
 		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(itemId, "inventory"));
-	}
-	
-	public void registerBlockModel(RRCBlock block, String modName) {
-		registerBlockModel(block, 0, modName);
 	}
 	
 	@Override

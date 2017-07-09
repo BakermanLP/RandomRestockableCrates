@@ -2,6 +2,7 @@ package zairus.randomrestockablecrates.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -20,7 +21,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.World;
@@ -30,7 +30,7 @@ import zairus.randomrestockablecrates.tileentity.TileEntityCrate;
 
 public class BlockCrate extends BlockContainer implements ITileEntityProvider {
 	public static final AxisAlignedBB CRATE_BOUNDING_BOX = new AxisAlignedBB(0.08F, 0.0F, 0.08F, 0.93F, 0.93F, 0.93F);
-	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	public static final PropertyBool OPEN = PropertyBool.create("open");
 	
 	private String modName;
@@ -179,15 +179,15 @@ public class BlockCrate extends BlockContainer implements ITileEntityProvider {
 	
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-		EnumFacing enumfacing = EnumFacing.getHorizontal(MathHelper.floor((double) (placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3).getOpposite();
+		EnumFacing enumfacing = placer.getHorizontalFacing().getOpposite();
 		state = state.withProperty(FACING, enumfacing).withProperty(OPEN, false);
-		world.setBlockState(pos, state, 3);
+		world.setBlockState(pos, state, 2);
 	}
 	
 	@Override
 	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
 		return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer, hand)
-				.withProperty(FACING, placer.getHorizontalFacing())
+				.withProperty(FACING, placer.getHorizontalFacing().getOpposite())
 				.withProperty(OPEN, false);
 	}
 	

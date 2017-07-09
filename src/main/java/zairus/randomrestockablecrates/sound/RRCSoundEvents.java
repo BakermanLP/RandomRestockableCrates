@@ -23,7 +23,6 @@ public class RRCSoundEvents {
 	}
 	
 	public static void registerSounds() {
-		
 		CRATE_OPEN = registerSound("crate_open");
 	}
 }

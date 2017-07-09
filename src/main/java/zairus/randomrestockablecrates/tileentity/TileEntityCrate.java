@@ -28,7 +28,6 @@ import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTable;
 
 import zairus.randomrestockablecrates.RRCConfig;
-import zairus.randomrestockablecrates.RandomRestockableCrates;
 import zairus.randomrestockablecrates.inventory.ContainerCrate;
 import zairus.randomrestockablecrates.sound.RRCSoundEvents;
 
@@ -57,10 +56,6 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 		this.tier = crateTier;
 	}
 	
-	public String getDefaultName() {
-		return "Crate";
-	}
-	
 	@Override
 	public String getName() {
 		return this.hasCustomName() ? this.customName : "container.crate";
@@ -77,7 +72,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	
 	@Override
 	public Container createContainer(InventoryPlayer playerInventory, EntityPlayer player) {
-		//        RandomRestockableCrates.logger.info("Restock: createContainer");
+		//RandomRestockableCrates.logger.info("Restock: createContainer");
 		return new ContainerCrate(this, player);
 	}
 	
@@ -122,7 +117,6 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	
 	@Override
 	public void setInventorySlotContents(int index, ItemStack stack) {
-		ItemStack itemstack = this.chestContents.get(index);
 		this.chestContents.set(index, stack);
 		
 		if (stack.getCount() > this.getInventoryStackLimit()) {
@@ -144,18 +138,18 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	@Override
 	public void openInventory(EntityPlayer player) {
 		
-		//        RandomRestockableCrates.logger.info("Restock: openInventory top worldObj: " + (worldObj != null));
-		//        RandomRestockableCrates.logger.info("Restock: openInventory top this_worldObj: " + (world != null));
+		//RandomRestockableCrates.logger.info("Restock: openInventory top worldObj: " + (worldObj != null));
+		//RandomRestockableCrates.logger.info("Restock: openInventory top this_worldObj: " + (world != null));
 		
 		if (world.isRemote) {
-			//            RandomRestockableCrates.logger.info("Restock: openInventory This is remote: " + (world.isRemote));
+			//RandomRestockableCrates.logger.info("Restock: openInventory This is remote: " + (world.isRemote));
 			return;
 		}
 		double x = this.pos.getX() + 0.5D;
 		double y = this.pos.getY() + 0.5D;
 		double z = this.pos.getZ() + 0.5D;
 		
-		//        RandomRestockableCrates.logger.info("Restock: openInventory at (" + x + ", " + y + ", " + z + ")");
+		//RandomRestockableCrates.logger.info("Restock: openInventory at (" + x + ", " + y + ", " + z + ")");
 		if (!player.isSpectator()) {
 			if (this.playersUsing < 0) {
 				this.playersUsing = 0;
@@ -184,18 +178,18 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 				}
 				
 				if (ticksEllapsed >= restockTime || this.firstTime) {
-					//                    RandomRestockableCrates.logger.info("Restock: openInventory firstTime: " + this.firstTime);
-					//                    RandomRestockableCrates.logger.info("Restock: openInventory ticksEllapsed: " + ticksEllapsed);
-					//                    RandomRestockableCrates.logger.info("Restock: openInventory restockTime: " + restockTime);
+					//RandomRestockableCrates.logger.info("Restock: openInventory firstTime: " + this.firstTime);
+					//RandomRestockableCrates.logger.info("Restock: openInventory ticksEllapsed: " + ticksEllapsed);
+					//RandomRestockableCrates.logger.info("Restock: openInventory restockTime: " + restockTime);
 					this.firstTime = false;
 					
 					world.playSound(null, pos, RRCSoundEvents.CRATE_OPEN, SoundCategory.BLOCKS, 1.0F, 1.2F / (world.rand.nextFloat() * 0.2f + 0.9f));
 					
-					//                    RandomRestockableCrates.logger.info("Restock: openInventory restock");
+					//RandomRestockableCrates.logger.info("Restock: openInventory restock");
 					restock(world.rand);
 				}
 				
-				//                updateMe();
+				//updateMe();
 			}
 			
 			world.addBlockEvent(this.pos, this.getBlockType(), 1, this.playersUsing);
@@ -218,7 +212,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
-		//        RandomRestockableCrates.logger.info("Restock: shouldRefresh");
+		//RandomRestockableCrates.logger.info("Restock: shouldRefresh");
 		return super.shouldRefresh(world, pos, oldState, newState);
 	}
 	
@@ -246,22 +240,22 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 				}
 				
 				if (ticksEllapsed >= restockTime && this.lastOpened > 0) {
-					//                    RandomRestockableCrates.logger.info("Restock: update firstTime: " + this.firstTime);
-					//                    RandomRestockableCrates.logger.info("Restock: update ticksEllapsed: " + ticksEllapsed);
-					//                    RandomRestockableCrates.logger.info("Restock: update restockTime: " + restockTime);
-					//                    RandomRestockableCrates.logger.info("Restock: update lastOpened: " + this.lastOpened);
-					//                    RandomRestockableCrates.logger.info("Restock: update open: " + this.open);
+					//RandomRestockableCrates.logger.info("Restock: update firstTime: " + this.firstTime);
+					//RandomRestockableCrates.logger.info("Restock: update ticksEllapsed: " + ticksEllapsed);
+					//RandomRestockableCrates.logger.info("Restock: update restockTime: " + restockTime);
+					//RandomRestockableCrates.logger.info("Restock: update lastOpened: " + this.lastOpened);
+					// RandomRestockableCrates.logger.info("Restock: update open: " + this.open);
 					// this.firstTime = false;
 					this.lastOpened = 0L;
 					this.open = false;
 					clear();
-					//                    RandomRestockableCrates.logger.info("Restock: update");
+					//RandomRestockableCrates.logger.info("Restock: update");
 					
 					world.playSound(null, pos, RRCSoundEvents.CRATE_OPEN, SoundCategory.BLOCKS, 1.0F, 1.2F / (world.rand.nextFloat() * 0.2f + 0.9f));
 					
 					updateMe();
 					
-					// restock(world.rand);
+					//restock(world.rand);
 				}
 				
 			}
@@ -275,25 +269,25 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 		
 		boolean addedItem = false;
 		
-		//		this.open = false;
-		//		updateMe();
+		//this.open = false;
+		//updateMe();
 		
 		// Clear chest content
-		//        RandomRestockableCrates.logger.info("Restock: Clear chest content");
+		//RandomRestockableCrates.logger.info("Restock: Clear chest content");
 		
 		clear();
 		
-		//        RandomRestockableCrates.logger.info("Restock: in Restock");
+		//RandomRestockableCrates.logger.info("Restock: in Restock");
 		
 		if (this.lootTable == null) {
 			this.lootTable = "minecraft:chests/simple_dungeon";
 		}
 		
 		if (this.lootTable != null) {
-			//            RandomRestockableCrates.logger.info("Restock: in LootTable " + this.lootTable);
+			//RandomRestockableCrates.logger.info("Restock: in LootTable " + this.lootTable);
 			this.lootTableLocation = new ResourceLocation(this.lootTable);
 			if (world.getLootTableManager() == null) {
-				//                RandomRestockableCrates.logger.info("Could not get loot manager.");
+				// RandomRestockableCrates.logger.info("Could not get loot manager.");
 				return;
 			}
 			
@@ -314,16 +308,10 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 			double z = this.pos.getZ() + 0.5D;
 			
 			table.fillInventory(this, random, lootBuilder.build());
-			RandomRestockableCrates.logger.info("Restock: refill chest at (" + x + ", " + y + ", " + z + ")");
+			//RandomRestockableCrates.logger.info("Restock: refill chest at (" + x + ", " + y + ", " + z + ")");
 		}
 		
 		this.markDirty();
-	}
-	
-	public void syncValues(int ticks, long lastOpened, boolean open) {
-		//        RandomRestockableCrates.logger.info("Restock: syncValues");
-		this.lastOpened = lastOpened;
-		this.open = open;
 	}
 	
 	public boolean getIsOpen() {
@@ -367,7 +355,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 			return;
 		}
 		
-		//        RandomRestockableCrates.logger.info("Restock: closeInventory");
+		//RandomRestockableCrates.logger.info("Restock: closeInventory");
 		if (!player.isSpectator() && this.getBlockType() instanceof BlockChest) {
 			--this.playersUsing;
 			world.addBlockEvent(this.pos, this.getBlockType(), 1, this.playersUsing);
@@ -379,7 +367,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	@Override
 	public void readFromNBT(NBTTagCompound compound) {
 		super.readFromNBT(compound);
-		//        RandomRestockableCrates.logger.warn("Restock: ReadFromNBT");
+		//RandomRestockableCrates.logger.warn("Restock: ReadFromNBT");
 		
 		NBTTagList nbttaglist = compound.getTagList("Items", 10);
 		
@@ -403,13 +391,13 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 		this.open = compound.getBoolean("open");
 		this.tier = compound.getInteger("tier");
 		
-		//        RandomRestockableCrates.logger.warn("Restock: ReadFromNBT: " + this.lootTable);
+		//RandomRestockableCrates.logger.warn("Restock: ReadFromNBT: " + this.lootTable);
 		
 	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
-		//        RandomRestockableCrates.logger.info("Restock: writeToNBT");
+		//RandomRestockableCrates.logger.info("Restock: writeToNBT");
 		super.writeToNBT(compound);
 		NBTTagList nbttaglist = new NBTTagList();
 		
@@ -421,7 +409,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 			compound.setString("CustomName", this.customName);
 		}
 		
-		//        RandomRestockableCrates.logger.info("Restock: NBTTagCompund LootTable: " + this.lootTable);
+		//RandomRestockableCrates.logger.info("Restock: NBTTagCompund LootTable: " + this.lootTable);
 		if (this.lootTable == null) {
 			switch (this.tier) {
 				case 1:
@@ -439,7 +427,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 			}
 		}
 		
-		//        RandomRestockableCrates.logger.info("Restock: NBTTagCompund LootTable 2: " + this.lootTable);
+		//RandomRestockableCrates.logger.info("Restock: NBTTagCompund LootTable 2: " + this.lootTable);
 		
 		compound.setString("LootTable", this.lootTable);
 		compound.setBoolean("first", this.firstTime);
@@ -452,7 +440,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	
 	@Override
 	public void updateContainingBlockInfo() {
-		//        RandomRestockableCrates.logger.info("Restock: updateContainingBlockInfo");
+		//RandomRestockableCrates.logger.info("Restock: updateContainingBlockInfo");
 		super.updateContainingBlockInfo();
 	}
 	
@@ -468,24 +456,24 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	
 	@Override
 	public void setField(int id, int value) {
-		//        RandomRestockableCrates.logger.info("Restock: setField");
+		//RandomRestockableCrates.logger.info("Restock: setField");
 	}
 	
 	@Override
 	public int getFieldCount() {
-		//        RandomRestockableCrates.logger.info("Restock: getFieldCount");
+		//RandomRestockableCrates.logger.info("Restock: getFieldCount");
 		return 0;
 	}
 	
 	@Override
 	public void clear() {
-		//        RandomRestockableCrates.logger.info("Restock: clear");
+		//RandomRestockableCrates.logger.info("Restock: clear");
 		chestContents.clear();
 	}
 	
 	@Override
 	public boolean receiveClientEvent(int id, int type) {
-		//        RandomRestockableCrates.logger.info("Restock: receiveClientEvent");
+		//RandomRestockableCrates.logger.info("Restock: receiveClientEvent");
 		if (id == 1) {
 			this.playersUsing = type;
 			return true;
@@ -496,14 +484,14 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	
 	@Override
 	public void invalidate() {
-		//        RandomRestockableCrates.logger.info("Restock: invalidate");
+		//RandomRestockableCrates.logger.info("Restock: invalidate");
 		super.invalidate();
 		this.updateContainingBlockInfo();
 	}
 	
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		//        RandomRestockableCrates.logger.info("Restock: SPacketUpdateTileEntity");
+		//RandomRestockableCrates.logger.info("Restock: SPacketUpdateTileEntity");
 		NBTTagCompound compound = new NBTTagCompound();
 		
 		ItemStackHelper.saveAllItems(compound, chestContents);
@@ -512,7 +500,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 			compound.setString("CustomName", this.customName);
 		}
 		
-		//        RandomRestockableCrates.logger.info("Restock: SPacketUpdateTileEntity LootTable: " + this.lootTable);
+		//RandomRestockableCrates.logger.info("Restock: SPacketUpdateTileEntity LootTable: " + this.lootTable);
 		if (this.lootTable == null) {
 			switch (this.tier) {
 				case 1:
@@ -530,7 +518,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 			}
 		}
 		
-		//        RandomRestockableCrates.logger.info("Restock: SPacketUpdateTileEntity LootTable 2: " + this.lootTable);
+		//RandomRestockableCrates.logger.info("Restock: SPacketUpdateTileEntity LootTable 2: " + this.lootTable);
 		
 		compound.setString("LootTable", this.lootTable);
 		compound.setBoolean("first", this.firstTime);
@@ -544,7 +532,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	@Override
 	public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt) {
 		if (pkt.getTileEntityType() == 0) {
-			//            RandomRestockableCrates.logger.warn("Restock: onDataPacket START");
+			//RandomRestockableCrates.logger.warn("Restock: onDataPacket START");
 			
 			NBTTagCompound compound = pkt.getNbtCompound();
 			
@@ -571,13 +559,13 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 			this.open = compound.getBoolean("open");
 			this.tier = compound.getInteger("tier");
 			
-			//            RandomRestockableCrates.logger.warn("Restock: onDataPacket END: " + this.lootTable);
+			//RandomRestockableCrates.logger.warn("Restock: onDataPacket END: " + this.lootTable);
 			
 		}
 	}
 	
 	protected void writeSyncableDataToNBT(NBTTagCompound syncData) {
-		//        RandomRestockableCrates.logger.info("Restock: writeSyncableDataToNBT");
+		//RandomRestockableCrates.logger.info("Restock: writeSyncableDataToNBT");
 		syncData.setString("LootTable", this.lootTable);
 		syncData.setLong("lastOpened", this.lastOpened);
 		syncData.setBoolean("open", this.open);
@@ -585,7 +573,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	}
 	
 	protected void readSyncableDataFromNBT(NBTTagCompound syncData) {
-		//        RandomRestockableCrates.logger.info("Restock: readSyncableDataFromNBT");
+		//RandomRestockableCrates.logger.info("Restock: readSyncableDataFromNBT");
 		this.lootTable = syncData.getString("LootTable");
 		this.lastOpened = syncData.getLong("lastOpened");
 		this.open = syncData.getBoolean("open");
@@ -602,7 +590,7 @@ public class TileEntityCrate extends TileEntityLockable implements ITickable, II
 	}
 	
 	private void updateMe() {
-		//        RandomRestockableCrates.logger.info("Restock: updateMe");
+		//RandomRestockableCrates.logger.info("Restock: updateMe");
 		this.markDirty();
 		world.markBlockRangeForRenderUpdate(getPos().add(-1, -1, -1), getPos().add(1, 1, 1));
 		IBlockState state = world.getBlockState(getPos());

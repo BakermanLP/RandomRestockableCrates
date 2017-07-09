@@ -18,7 +18,6 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import zairus.randomrestockablecrates.block.RRCBlocks;
 import zairus.randomrestockablecrates.event.RRCEventHandler;
 import zairus.randomrestockablecrates.gui.GuiHandler;
-import zairus.randomrestockablecrates.network.PacketPipeline;
 import zairus.randomrestockablecrates.proxy.CommonProxy;
 import zairus.randomrestockablecrates.sound.RRCSoundEvents;
 
@@ -31,8 +30,6 @@ public class RandomRestockableCrates {
 	
 	@Mod.Instance(RRCConstants.MODID)
 	public static RandomRestockableCrates instance;
-	
-	public static final PacketPipeline packetPipeline = new PacketPipeline();
 	
 	public static CreativeTabs tabCrates = new CreativeTabs("RandomCrates") {
 		@Override
@@ -58,7 +55,6 @@ public class RandomRestockableCrates {
 		RRCEventHandler eventHandler = new RRCEventHandler();
 		
 		RandomRestockableCrates.proxy.init(event);
-		packetPipeline.initalise();
 		
 		MinecraftForge.EVENT_BUS.register(eventHandler);
 		MinecraftForge.TERRAIN_GEN_BUS.register(eventHandler);
@@ -69,7 +65,5 @@ public class RandomRestockableCrates {
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		RandomRestockableCrates.proxy.postInit(event);
-		packetPipeline.postInitialise();
 	}
 }

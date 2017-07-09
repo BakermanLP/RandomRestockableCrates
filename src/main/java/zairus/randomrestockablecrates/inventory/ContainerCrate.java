@@ -46,28 +46,28 @@ public class ContainerCrate extends Container {
 	
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int index) {
-		ItemStack itemstack = ItemStack.EMPTY;
+		ItemStack transferedStack = ItemStack.EMPTY;
 		Slot slot = this.inventorySlots.get(index);
 		
 		if (slot != null && slot.getHasStack()) {
-			ItemStack itemstack1 = slot.getStack();
-			itemstack = itemstack1.copy();
+			ItemStack slotStack = slot.getStack();
+			transferedStack = slotStack.copy();
 			
 			if (index < TileEntityCrate.SLOT_COUNT) {
-				if (!this.mergeItemStack(itemstack1, TileEntityCrate.SLOT_COUNT, this.inventorySlots.size(), true)) {
+				if (!this.mergeItemStack(slotStack, TileEntityCrate.SLOT_COUNT, this.inventorySlots.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.mergeItemStack(itemstack1, 0, TileEntityCrate.SLOT_COUNT, false)) {
+			} else if (!this.mergeItemStack(slotStack, 0, TileEntityCrate.SLOT_COUNT, false)) {
 				return ItemStack.EMPTY;
 			}
 			
-			if (itemstack1.isEmpty()) {
+			if (slotStack.isEmpty()) {
 				slot.putStack(ItemStack.EMPTY);
 			} else {
 				slot.onSlotChanged();
 			}
 		}
 		
-		return itemstack;
+		return transferedStack;
 	}
 }
