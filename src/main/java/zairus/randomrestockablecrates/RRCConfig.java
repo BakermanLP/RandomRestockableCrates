@@ -2,12 +2,9 @@ package zairus.randomrestockablecrates;
 
 import java.io.File;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.config.Configuration;
 
-public class RRCConfig
-{
+public class RRCConfig {
 	public static Configuration config;
 	
 	public static int tier1RestockTime = 6000;
@@ -15,13 +12,12 @@ public class RRCConfig
 	public static int tier3RestockTime = 24000;
 	public static int tier4RestockTime = 24000;
 	
-    public static String tier1DefaultTable = "minecraft:chests/simple_dungeon";
-    public static String tier2DefaultTable = "minecraft:chests/village_blacksmith";
-    public static String tier3DefaultTable = "minecraft:chests/stronghold_library";
-    public static String tier4DefaultTable = "minecraft:chests/end_city_treasure";
+	public static String tier1DefaultTable = "minecraft:chests/simple_dungeon";
+	public static String tier2DefaultTable = "minecraft:chests/village_blacksmith";
+	public static String tier3DefaultTable = "minecraft:chests/stronghold_library";
+	public static String tier4DefaultTable = "minecraft:chests/end_city_treasure";
 	
-	public static void init(File file)
-	{
+	public static void init(File file) {
 		config = new Configuration(file);
 		
 		config.load();

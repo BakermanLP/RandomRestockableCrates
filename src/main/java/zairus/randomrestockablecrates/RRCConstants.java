@@ -1,7 +1,6 @@
 package zairus.randomrestockablecrates;
 
-public class RRCConstants
-{
+public class RRCConstants {
 	public static final String MODID = "randomrestockablecrates";
 	public static final String NAME = "Random Restockable Crates";
 	public static final String VERSION = "1.2.6";
